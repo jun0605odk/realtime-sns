@@ -11,7 +11,8 @@
     <input type="button" id="sample" value="送信">
 
     <script>
-        var sock = new WebSocket('ws://127.0.0.1:'.process.env.PORT);
+        var port = process.env.PORT
+        var sock = new WebSocket('ws://127.0.0.1:'+port);
 
         // 接続
         sock.addEventListener('open',function(e){
