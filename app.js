@@ -36,7 +36,9 @@ var conected_client;
 const db = require('./db/db');
 db.client.connect((err, client) => {
   if (err) {
+    console.log("######## database error!!! #########");
     console.log(err);
+    console.log("######## database error!!! #########");
   } else {
     conected_client = client;
   }

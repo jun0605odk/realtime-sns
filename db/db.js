@@ -30,8 +30,8 @@ require('dotenv').config();
 
 exports.client = new Client({
     host: process.env.ENV_HOST,
-    databese: 'dboo9atrhf4iu8',
-    user: 'cjfvcuehqxxjhs',
+    databese: process.env.ENV_DATABASE,
+    user: process.env.ENV_USER,
     port: process.env.ENV_PORT,
     password: process.env.ENV_PASSWORD,
 });
