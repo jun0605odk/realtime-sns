@@ -29,9 +29,9 @@ const { Client } = require('pg');
 require('dotenv').config();
 
 exports.client = new Client({
-    user: process.env.ENV_USER,
     host: process.env.ENV_HOST,
-    databese: 'dboo9atrhf4iu8',
+    databese: process.env.ENV_DATABASE,
+    user: process.env.ENV_USER,
     port: process.env.ENV_PORT,
     password: process.env.ENV_PASSWORD,
 });
