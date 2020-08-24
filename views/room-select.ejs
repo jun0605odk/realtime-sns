@@ -1,0 +1,38 @@
+<%- include('include/header'); %>
+
+<style>
+.btn-square {
+  display: inline-block;
+  padding: 0.5em 1em;
+  text-decoration: none;
+  background: #668ad8;/*ボタン色*/
+  color: #FFF;
+  border-bottom: solid 4px #627295;
+  border-radius: 3px;
+}
+.btn-square:active {
+  /*ボタンを押したとき*/
+  -webkit-transform: translateY(4px);
+  transform: translateY(4px);/*下に動く*/
+  border-bottom: none;/*線を消す*/
+}
+</style>
+
+<script>
+console.log("<%= room_data[0].id %>");
+</script>
+
+
+<h1>ルーム選択</h1>
+<br>
+<a href="<%= make_room_url %>" class="btn-square">新しいルームを作成する</a>
+<br>
+<h3>ルーム一覧</h3>
+<ul>
+  <% room_data.forEach(function (value, index) { %>
+  <!-- <li>値は<%= value.room_name %>で、インデックスは<%= index %>で出力</li> -->
+  <li><a href="<%= home_url %>/room/name/<%= value.room_name %>"><%= value.room_name %></a></li>
+  <% }); %>
+</ul>
+
+<%- include('include/footer'); %>
