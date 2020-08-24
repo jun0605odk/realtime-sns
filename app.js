@@ -9,6 +9,7 @@ var port = process.env.PORT || 3000;
 
 // 変数
 var home_url = "https://realtime-sns.herokuapp.com";
+var error_msg = "";
 
 function make_default_data(req) {
   if(req.cookies.sns_user_name){
