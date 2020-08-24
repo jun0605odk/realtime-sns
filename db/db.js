@@ -15,7 +15,7 @@
 //     user: 'postgres',
 //     host: '192.168.2.103',
 //     database: 'realtime_sns_db',
-//     password: '9665JOst',
+//     password: '',
 //     port: 5432,
 // })
 // client.connect()
@@ -31,7 +31,7 @@ require('dotenv').config();
 exports.client = new Client({
     user: process.env.ENV_USER,
     host: process.env.ENV_HOST,
-    databese: process.env.ENV_DATABASE,
+    databese: 'dboo9atrhf4iu8',
     port: process.env.ENV_PORT,
     password: process.env.ENV_PASSWORD,
 });
