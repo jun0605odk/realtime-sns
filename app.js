@@ -33,7 +33,17 @@ function make_default_data(req) {
 
 // db
 var conected_client;
-const db = require('./db/db');
+const pg = require('pg');
+require('dotenv').config();
+
+const db = new pg.Pool ({
+    host: process.env.ENV_HOST,
+    databese: process.env.ENV_DATABASE,
+    user: process.env.ENV_USER,
+    port: process.env.ENV_PORT,
+    password: process.env.ENV_PASSWORD,
+});
+
 db.pool.connect((err, client) => {
   if (err) {
     console.log("######## database error!!! #########");
