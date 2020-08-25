@@ -92,8 +92,8 @@ app.get('/db-test', function(req, res, next) {
     text: 'SELECT * FROM member',
     values: [],
   }
-  DB_access(query);
-  console.log(res)
+  resp = DB_access(query);
+  console.log(resp)
 
   res.render('index', {
     title: 'hello express',
@@ -123,7 +123,7 @@ app.post('/sign-up-done', function(req, res) {
     values: [req.body.name, req.body.email, req.body.tel, req.body.gender, req.body.pass],
   }
   
-  DB_access(query);
+  res = DB_access(query);
   console.log(res)
   post_res.cookie('sns_user_name', post_req.body.name, cookie_obj)
   post_res.cookie('sns_user_email', post_req.body.email, cookie_obj)
@@ -159,23 +159,19 @@ app.post('/log-in', function(req, res) {
     values: [req.body.email, req.body.pass],
   };
 
-  conected_client.query(query)
-    .then(res => {
-      console.log(res);
-      if (res.rowCount!=0) {
-        post_res.cookie('sns_user_name',  res.rows[0].name,  cookie_obj );
-        post_res.cookie('sns_user_email', res.rows[0].email, cookie_obj );
-        console.log(res.rows[0].name);
-        console.log(res.rows[0].email);
-        //console.log(req.headers.cookie);
-        //console.log(req.cookies.sns_user_name);
-        post_res.redirect(home_url + '/room');
-      } else {
-        var error_msg = 'エラー<br>メールアドレスとパスワードが一致しません'
-        post_res.render('log-in',  {home_url:home_url, error_msg:error_msg});
-      }
-    })
-    .catch(e => console.error(e.stack))
+  res = DB_access(query);
+  if (res.rowCount!=0) {
+    post_res.cookie('sns_user_name',  res.rows[0].name,  cookie_obj );
+    post_res.cookie('sns_user_email', res.rows[0].email, cookie_obj );
+    console.log(res.rows[0].name);
+    console.log(res.rows[0].email);
+    //console.log(req.headers.cookie);
+    //console.log(req.cookies.sns_user_name);
+    post_res.redirect(home_url + '/room');
+  } else {
+    var error_msg = 'エラー<br>メールアドレスとパスワードが一致しません'
+    post_res.render('log-in',  {home_url:home_url, error_msg:error_msg});
+  }
     
   });
 
@@ -187,24 +183,14 @@ app.get('/room', function(req, res){
   const query = {
     text: 'SELECT * FROM room'
   };
-
-  conected_client.query(query)
-    .then(res => {
-      console.log(res);
-      // if (res.rowCount!=0) {
-        
-      // } else {
-        
-      // }
-      default_data = make_default_data(post_req);
-      var room_data = {room_data:res.rows};
-      default_data = { ...default_data, ...room_data };
-      console.log("******************");
-      console.log(default_data);
-      console.log("******************");
-      post_res.render('room-select', default_data);
-    })
-    .catch(e => console.error(e.stack))
+  DB_access(query);
+  default_data = make_default_data(post_req);
+  var room_data = {room_data:res.rows};
+  default_data = { ...default_data, ...room_data };
+  console.log("******************");
+  console.log(default_data);
+  console.log("******************");
+  post_res.render('room-select', default_data);
   
 });
 
@@ -232,15 +218,8 @@ app.post('/room/make', function(req, res){
     values: [req.cookies.sns_user_name, req.cookies.sns_user_email, req.body.room_name, new Date()],
   };
 
-  conected_client.query(query)
-    .then(res => {
-      console.log(res)
-      post_res.redirect(home_url + '/room')
-    })
-    .catch(e => {
-      console.error(e.stack)
-      post_res.redirect(home_url + '/room/make')
-    });
+  DB_access(query);
+  post_res.redirect(home_url + '/room')
 
 });
 
@@ -280,20 +259,14 @@ chat.on('connection', function(socket){
       values: [data.room, serch_date],
     };
 
-    conected_client.query(query)
-    .then(res => {
-      console.log("*****old-chat-data*****");
-      console.log(res);
-      console.log("*****old-chat-data*****");
-      if (res.rowCount!=0) {
-        // console.log(res.rows[0].chat_txt);
-        res.rows.forEach((elememt, index) => {
-          console.log(`${index}: ${elememt.chat_txt}`);
-          chat.to(socket.id).emit('old chat message from server', {chat_txt: `${elememt.chat_txt}` });
-        });
-      }
-    })
-    .catch(e => console.error(e.stack))
+    res = DB_access(query);
+    if (res.rowCount!=0) {
+      // console.log(res.rows[0].chat_txt);
+      res.rows.forEach((elememt, index) => {
+        console.log(`${index}: ${elememt.chat_txt}`);
+        chat.to(socket.id).emit('old chat message from server', {chat_txt: `${elememt.chat_txt}` });
+      });
+    }
 
   });
 
