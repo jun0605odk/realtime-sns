@@ -35,6 +35,7 @@ function make_default_data(req) {
 var conected_client;
 const db = require('./db/db');
 db.client.connect((err, client) => {
+db.pool.connect((err, client) => {
   if (err) {
     console.log("######## database error!!! #########");
     console.log(err);
