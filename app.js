@@ -87,10 +87,6 @@ app.use(express.static(__dirname + '/static')) //静的ファイルを使用す�
 // ルーティング
 //
 app.get('/db-test', function(req, res, next) {
-  
-  conected_client.query('SELECT * FROM member', (err, result) => {
-    console.log(result.rows);
-  });
 
   const query = {
     text: 'SELECT * FROM member',
@@ -98,7 +94,6 @@ app.get('/db-test', function(req, res, next) {
   }
   DB_access(query);
   console.log(res)
-  
 
   res.render('index', {
     title: 'hello express',
