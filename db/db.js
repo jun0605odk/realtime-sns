@@ -28,13 +28,15 @@
 const pg = require('pg');
 require('dotenv').config();
 
-exports.pool = pg.Pool ({
+const pool = new pg.Pool ({
     host: process.env.ENV_HOST,
     databese: process.env.ENV_DATABASE,
     user: process.env.ENV_USER,
     port: process.env.ENV_PORT,
     password: process.env.ENV_PASSWORD,
 });
+
+exports.pool = pool
 // client.connect()
 // client.query('SELECT NOW()', (err, res) => {
 //     console.log(err, res)
