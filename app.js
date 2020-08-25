@@ -32,27 +32,32 @@ function make_default_data(req) {
 };
 
 // db
-var conected_client;
-const pg = require('pg');
-require('dotenv').config();
+const { getPostgresClient } = require('./db/db');
+async function DB_access(query) {
+  const db = await getPostgresClient();
+  try {
+      
+      await db.begin();
+      await db.execute(query);
+      await db.commit();
 
-const db = new pg.Pool ({
-    host: process.env.ENV_HOST,
-    databese: process.env.ENV_DATABASE,
-    user: process.env.ENV_USER,
-    port: process.env.ENV_PORT,
-    password: process.env.ENV_PASSWORD,
-});
-
-db.pool.connect((err, client) => {
-  if (err) {
-    console.log("######## database error!!! #########");
-    console.log(err);
-    console.log("######## database error!!! #########");
-  } else {
-    conected_client = client;
+  } catch (e) {
+      await db.rollback();
+      throw e;
+  } finally {
+      await db.release();
   }
-});
+}
+// var conected_client;
+// db.pool.connect((err, client) => {
+//   if (err) {
+//     console.log("######## database error!!! #########");
+//     console.log(err);
+//     console.log("######## database error!!! #########");
+//   } else {
+//     conected_client = client;
+//   }
+// });
 
 // cookie
 var expire_date = new Date();
@@ -87,6 +92,14 @@ app.get('/db-test', function(req, res, next) {
     console.log(result.rows);
   });
 
+  const query = {
+    text: 'SELECT * FROM member',
+    values: [],
+  }
+  DB_access(query);
+  console.log(res)
+  
+
   res.render('index', {
     title: 'hello express',
   });
@@ -115,16 +128,10 @@ app.post('/sign-up-done', function(req, res) {
     values: [req.body.name, req.body.email, req.body.tel, req.body.gender, req.body.pass],
   }
   
-  conected_client.query(query)
-    .then(res => {
-      console.log(res)
-      post_res.cookie('sns_user_name', post_req.body.name, cookie_obj)
-      post_res.cookie('sns_user_email', post_req.body.email, cookie_obj)
-    })
-    .catch(e => {
-      console.log("db関連のエラー")
-      console.error(e.stack)
-    });
+  DB_access(query);
+  console.log(res)
+  post_res.cookie('sns_user_name', post_req.body.name, cookie_obj)
+  post_res.cookie('sns_user_email', post_req.body.email, cookie_obj)
   
 
   var data = {

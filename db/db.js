@@ -1,44 +1,86 @@
 
+require('dotenv').config();
+const { Pool } = require('pg');
+const connectionString = process.env.ENV_URI;
+const pool = new Pool({ connectionString });
+
+/**
+ * Postgresクラス
+ */
+class Postgres {
+
+    /**
+     * Poolからclientを取得
+     * @return {Promise<void>}
+     */
+    async init() {
+        this.client = await pool.connect();
+    }
+
+    /**
+     * SQLを実行
+     * @param query
+     * @param params
+     * @return {Promise<*>}
+     */
+    async execute(query, params = []) {
+        return (await this.client.query(query, params)).rows;
+    }
+
+    /**
+     * 取得したクライアントを解放してPoolに戻す
+     * @return {Promise<void>}
+     */
+    async release() {
+        await this.client.release(true);
+    }
+
+    /**
+     * Transaction Begin
+     * @return {Promise<void>}
+     */
+    async begin() {
+        await this.client.query('BEGIN');
+    }
+
+    /**
+     * Transaction Commit
+     * @return {Promise<void>}
+     */
+    async commit() {
+        await this.client.query('COMMIT');
+    }
+
+    /**
+     * Transaction Rollback
+     * @return {Promise<void>}
+     */
+    async rollback() {
+        await this.client.query('ROLLBACK');
+    }
+}
+
+/**
+ * Postgresのインスタンスを返却
+ * @return {Promise<Postgres>}
+ */
+const getClient = async () => {
+    const postgres = new Postgres();
+    await postgres.init();
+    return postgres;
+};
+
+module.exports.getPostgresClient = getClient;
+
 // const pg = require('pg');
 // require('dotenv').config();
 
-// exports.pool = pg.Pool ({
-//   host: process.env.ENV_HOST,
-//   databese: process.env.ENV_DB,
-//   user: process.env.ENV_USER,
-//   port: 5432,
-//   password: process.env.ENV_PASSWORD,
+// const pool = new pg.Pool ({
+//     host: process.env.ENV_HOST,
+//     databese: process.env.ENV_DATABASE,
+//     user: process.env.ENV_USER,
+//     port: process.env.ENV_PORT,
+//     password: process.env.ENV_PASSWORD,
 // });
 
-// const { Client } = require('pg')
-// const client = new Client({
-//     user: 'postgres',
-//     host: '192.168.2.103',
-//     database: 'realtime_sns_db',
-//     password: '',
-//     port: 5432,
-// })
-// client.connect()
-// client.query('SELECT NOW()', (err, res) => {
-//     console.log(err, res)
-//     client.end()
-// })
-
-
-const pg = require('pg');
-require('dotenv').config();
-
-const pool = new pg.Pool ({
-    host: process.env.ENV_HOST,
-    databese: process.env.ENV_DATABASE,
-    user: process.env.ENV_USER,
-    port: process.env.ENV_PORT,
-    password: process.env.ENV_PASSWORD,
-});
-
-exports.pool = pool
-// client.connect()
-// client.query('SELECT NOW()', (err, res) => {
-//     console.log(err, res)
-//     client.end()
-// })
+// exports.pool = pool
